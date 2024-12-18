@@ -1,0 +1,46 @@
+{
+  "users": [
+    {
+      "id": 1734465099311,
+      "username": "conech",
+      "password": "123",
+      "role": "admin"
+    },
+    {
+      "id": 1734476293070,
+      "username": "Han",
+      "password": "123",
+      "role": "user"
+    },
+    {
+      "id": 1734476302980,
+      "username": "Cao",
+      "password": "123",
+      "role": "user"
+    }
+  ],
+  "projects": [
+    {
+      "id": "a174",
+      "name": "CNPM",
+      "completed": false,
+      "assignedUsers": [
+        "1734465099311"
+      ],
+      "tasks": [
+        {
+          "id": 1734477145936,
+          "name": "Writing report",
+          "assignee": "",
+          "completed": false
+        },
+        {
+          "id": 1734477150189,
+          "name": "Coding",
+          "assignee": "",
+          "completed": false
+        }
+      ]
+    }
+  ]
+}
