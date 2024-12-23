@@ -1,12 +1,8 @@
 ---
 import UserManagement from "../components/UserManagement.jsx";
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<html>
-    <head>
-        <title>User Management</title>
-    </head>
-    <body>
-        <UserManagement client:only="react" />
-    </body>
-</html>
+<MainLayout title="User Management">
+    <UserManagement client:only="react" />
+</MainLayout>

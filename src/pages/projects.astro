@@ -1,12 +1,8 @@
 ---
 import ProjectManagement from "../components/ProjectManagement.jsx";
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<html>
-    <head>
-        <title>Project Management</title>
-    </head>
-    <body>
-        <ProjectManagement client:only="react" />
-    </body>
-</html>
+<MainLayout title="Project Management">
+    <ProjectManagement client:only="react" />
+</MainLayout>

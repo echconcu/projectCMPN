@@ -18,74 +18,37 @@ export default function Dashboard() {
     }
 
     return (
-        <>
-        <header style={{ backgroundColor: "#213555", padding: "0.1px",height:"200px", textAlign: "center" , top:"0"}}>
-        <h1 style={{ color: "#F5EFE7", fontSize:"50px" }}>Welcome, {user?.username}</h1>
-        <h2 style={{color: "#F5EFE7", fontSize:"30px"}}>Dự án: Ứng dụng quản lý công việc cho cá nhân, doanh nghiệp nhỏ. </h2>
-        </header>
-        <div>
-            
-            <button onClick={logout} style={{height:"40px", width:"100px",fontSize:"20px"}}>Logout</button>
-            <ul>
-                <li>
-                    <a href="/users" style={{height:"40px",padding:"5px",fontSize:"25px", backgroundColor:"#213555", color:"#F5EFE7"}}>User Management</a>
-                </li>
+        <div className="flex flex-col h-full">
+            <header className="bg-[#213555] py-5 text-center flex-col flex justify-center items-center">
+                <h1 className="text-[#F5EFE7] text-5xl font-bold">Welcome, {user?.username}</h1>
+                <h2 className="text-[#F5EFE7] text-3xl">Dự án: Ứng dụng quản lý công việc cho cá nhân, doanh nghiệp nhỏ. </h2>
+            </header>
+            <div className="text-center flex flex-col items-center justify-center flex-1">
+                <h3 className="text-[#213555] text-5xl font-bold">Tỷ lệ đóng góp</h3>
+                <h4
+                    className="bg-[#3E5879] text-[#F5EFE7] text-3xl font-bold py-2 px-4 rounded w-[400px] mx-auto mt-4"
+                >
+                    Huỳnh Bảo Hân - 55%
+                </h4>
+                <h5
+                    className="bg-[#3E5879] text-[#F5EFE7] text-3xl font-bold py-2 px-4 rounded w-[350px] mx-auto mt-4"
+                >
+                    Đoàn Đình Cao - 45%
+                </h5>
+            </div>
+            <footer className="bg-[#213555] text-[#F5EFE7] p-4 w-full">
+                <h2 className="text-left px-4">
+                    Huỳnh Bảo Hân - 106210046 - 21KTMT
+                </h2>
                 <br></br>
-                <li>
-                    <a href="/projects" style={{height:"40px",padding:"5px",fontSize:"25px", backgroundColor:"#213555", color:"#F5EFE7"}}>Project Management</a>
-                </li>
-            </ul>
+                <h2 className="text-left px-4">
+                    Đoàn Đình Cao - 106210229 - 21KTMT2
+                </h2>
+                <p className="m-0 text-base text-center">
+                    &copy; {new Date().getFullYear()} Da Nang University of Science and Technology.
+                </p>
+            </footer>
         </div>
-        <div style={{ textAlign: "center" }}>
-  <h3 style={{ color: "#213555", fontSize: "40px" }}>Tỷ lệ đóng góp</h3>
-  <h4
-    style={{
-      backgroundColor: "#3E5879",
-      color: "#F5EFE7",
-      fontSize: "25px",
-      width: "400px",
-      margin: "10px auto",
-      textAlign: "center",
-    }}
-  >
-    Huỳnh Bảo Hân - 55%
-  </h4>
-  <h5
-    style={{
-      backgroundColor: "#3E5879",
-      color: "#F5EFE7",
-      fontSize: "25px",
-      width: "350px",
-      margin: "10px auto",
-      textAlign: "center",
-    }}
-  >
-    Đoàn Đình Cao - 45%
-  </h5>
-</div>
-        <footer style={{
-            backgroundColor: "#213555",
-            color: "#F5EFE7",
-            
-            padding: "10px 0",
-            position: "absolute",
-            bottom: "0",
-            width: "100%",
-        }}>
-            <h style={{textAlign:"left", padding:"10px"}}>
-                Huỳnh Bảo Hân - 106210046 - 21KTMT</h><br></br>
-                <h style={{textAlign:"left", padding:"10px"}}>   
-                Đoàn Đình Cao - 106210229 - 21KTMT2
-            </h>
-            <p style={{
-                margin: "0",
-                fontSize: "14px",
-                fontFamily: "Arial, sans-serif",
-                textAlign: "center",
-            }}>
-                &copy; {new Date().getFullYear()} Da Nang University of Science and Technology.
-            </p>
-        </footer>
-        </>
     );
 }
+

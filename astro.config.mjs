@@ -3,6 +3,8 @@ import node from '@astrojs/node';
 
 import react from '@astrojs/react';
 
+import tailwind from '@astrojs/tailwind';
+
 export default defineConfig({
   output: 'server',
 
@@ -11,5 +13,5 @@ export default defineConfig({
   }),
 
   middleware: './src/middleware/auth.ts',
-  integrations: [react()]
+  integrations: [react(), tailwind()]
 });

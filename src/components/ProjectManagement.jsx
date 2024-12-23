@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import ProjectDialog from "./ProjectDialog";
+import AssignUserDialog from "./AssignUserDialog";
 
 // Component Header
 function Header() {
@@ -9,21 +11,10 @@ function Header() {
     );
 }
 
-// Component Footer
-function Footer() {
-    return (
-        <footer style={{ backgroundColor: '#333', padding: '10px', color: 'white', textAlign: 'center' }}>
-            <p>&copy; 2024 Project Management System</p>
-        </footer>
-    );
-}
 
 export default function ProjectManagement() {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
-    const [name, setName] = useState("");
-    const [selectedUser, setSelectedUser] = useState("");
-    const [selectedProject, setSelectedProject] = useState("");
     const [taskName, setTaskName] = useState("");
     const [assignedTaskUser, setAssignedTaskUser] = useState("");
     const [accordionOpen, setAccordionOpen] = useState({});
@@ -39,18 +30,6 @@ export default function ProjectManagement() {
             .then(setUsers);
     }, []);
 
-    // Add new project
-    function addProject() {
-        const newProject = { name, completed: false, assignedUsers: [], tasks: [] };
-        fetch("http://localhost:3000/projects", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newProject),
-        }).then(() => {
-            setProjects((prev) => [...prev, newProject]); // Add project to local state
-        });
-    }
-
     // Delete project
     function deleteProject(projectId) {
         fetch(`http://localhost:3000/projects/${projectId}`, {
@@ -58,26 +37,6 @@ export default function ProjectManagement() {
         }).then(() => {
             setProjects((prev) => prev.filter((project) => project.id !== projectId)); // Remove from local state
         });
-    }
-
-    // Assign user to project
-    function assignUserToProject() {
-        const project = projects.find((p) => p.id === selectedProject);
-        if (project) {
-            const updatedUsers = [...new Set([...project.assignedUsers, selectedUser])];
-
-            fetch(`http://localhost:3000/projects/${selectedProject}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ assignedUsers: updatedUsers }),
-            }).then(() => {
-                setProjects((prev) =>
-                    prev.map((p) =>
-                        p.id === selectedProject ? { ...p, assignedUsers: updatedUsers } : p
-                    )
-                );
-            });
-        }
     }
 
     // Remove user from project
@@ -162,19 +121,38 @@ export default function ProjectManagement() {
         setAccordionOpen((prev) => ({ ...prev, [projectId]: !prev[projectId] }));
     }
 
+    // Mark project as completed
+    function markProjectAsCompleted(projectId) {
+        const project = projects.find((p) => p.id === projectId);
+        const updatedProject = { ...project, completed: !project.completed };
+
+        fetch(`http://localhost:3000/projects/${projectId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedProject),
+        }).then(() => {
+            setProjects((prev) =>
+                prev.map((p) =>
+                    p.id === projectId ? updatedProject : p
+                )
+            );
+        });
+    }
+
     return (
         <div style={{ fontFamily: 'Arial, sans-serif' }}>
             <Header />
 
             <main style={{ padding: '20px' }}>
                 <section>
-                    <h2 style={{backgroundColor:"#213555", color:"#F5EFE7", height:"32px", justifyContent:"center", padding:"10px"}}>Projects</h2>
+                    <h2 style={{ backgroundColor: "#213555", color: "#F5EFE7", height: "32px", justifyContent: "center", padding: "10px" }}>Projects</h2>
                     <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                         {projects.map((project) => (
                             <li key={project.id} style={{ marginBottom: '20px' }}>
                                 <div style={{ backgroundColor: '#f0f0f0', padding: '10px', borderRadius: '5px' }}>
                                     <strong>{project.name}</strong> -{" "}
-                                    {project.completed ? "Done" : "In Progress"}
+                                    {project.completed ? "Done" : "In Progress"} -{" "}
+                                    {`${Math.round((project.tasks.filter((task) => task.completed).length / project.tasks.length) * 100)}%`}
                                     <br />
                                     <strong>Assigned Users:</strong>
                                     <ul>
@@ -193,7 +171,7 @@ export default function ProjectManagement() {
                                             ) : null;
                                         })}
                                     </ul>
-                                    <button onClick={() => toggleAccordion(project.id)} style={{ marginTop: '10px' }}>
+                                    <button onClick={() => toggleAccordion(project.id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                         {accordionOpen[project.id] ? "Hide Tasks" : "Show Tasks"}
                                     </button>
                                     {accordionOpen[project.id] && (
@@ -213,39 +191,49 @@ export default function ProjectManagement() {
                                                             users.find((user) => user.id === task.assignee)?.username}
                                                         <button
                                                             onClick={() => removeTask(project.id, task.id)}
-                                                            style={{ marginLeft: '10px' }}
+                                                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
                                                         >
                                                             Delete
                                                         </button>
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <input
-                                                type="text"
-                                                placeholder="Task Name"
-                                                value={taskName}
-                                                onChange={(e) => setTaskName(e.target.value)}
-                                                style={{ marginRight: '10px' }}
-                                            />
-                                            <select
-                                                onChange={(e) => setAssignedTaskUser(e.target.value)}
-                                                value={assignedTaskUser}
-                                            >
-                                                <option value="">Assign User</option>
-                                                {users.map((user) => (
-                                                    <option key={user.id} value={user.id}>
-                                                        {user.username}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <button onClick={() => addTask(project.id)} style={{ marginLeft: '10px' }}>
-                                                Add Task
-                                            </button>
+                                            <div className="flex gap-x-3">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Task Name"
+                                                    value={taskName}
+                                                    onChange={(e) => setTaskName(e.target.value)}
+                                                    className="p-2 border rounded"
+                                                />
+                                                <select
+                                                    onChange={(e) => setAssignedTaskUser(e.target.value)}
+                                                    value={assignedTaskUser}
+                                                    className="p-2 border rounded"
+                                                >
+                                                    <option value="">Assign User</option>
+                                                    {users.reduce((acc, user) => {
+                                                        if (project.assignedUsers.includes(user.id)) {
+                                                            acc.push(<option key={user.id} value={user.id}>{user.username}</option>);
+                                                        }
+                                                        return acc;
+                                                    }, [])}
+                                                </select>
+                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => addTask(project.id)}>
+                                                    Add Task
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                     <button
+                                        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+                                        onClick={() => markProjectAsCompleted(project.id)}
+                                    >
+                                        Mark as {project.completed ? "Incomplete" : "Complete"}
+                                    </button>
+                                    <button
+                                        className="mt-4 bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
                                         onClick={() => deleteProject(project.id)}
-                                        style={{ marginTop: '10px', backgroundColor: 'red', color: 'white' }}
                                     >
                                         Delete Project
                                     </button>
@@ -255,72 +243,32 @@ export default function ProjectManagement() {
                     </ul>
                 </section>
 
-                <section style={{ marginTop: '40px' }}>
-                    <h2>Add Project</h2>
-                    <input
-                        type="text"
-                        placeholder="Project Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        style={{ marginRight: '10px' }}
-                    />
-                    <button onClick={addProject}>Add</button>
-                </section>
+                <ProjectDialog />
 
-                <section style={{ marginTop: '40px' }}>
-                    <h2>Assign User to Project</h2>
-                    <select
-                        onChange={(e) => setSelectedProject(e.target.value)}
-                        value={selectedProject}
-                        style={{ marginRight: '10px' }}
-                    >
-                        <option value="">Select Project</option>
-                        {projects.map((project) => (
-                            <option key={project.id} value={project.id}>
-                                {project.name}
-                            </option>
-                        ))}
-                    </select>
-
-                    <select
-                        onChange={(e) => setSelectedUser(e.target.value)}
-                        value={selectedUser}
-                        style={{ marginRight: '10px' }}
-                    >
-                        <option value="">Select User</option>
-                        {users.map((user) => (
-                            <option key={user.id} value={user.id}>
-                                {user.username}
-                            </option>
-                        ))}
-                    </select>
-
-                    <button onClick={assignUserToProject}>Assign User</button>
-                </section>
+                <AssignUserDialog projects={projects} users={users} setProjects={setProjects} />
             </main>
             <footer style={{
-            backgroundColor: "#213555",
-            color: "#F5EFE7",
-            
-            padding: "10px 0",
-            position: "absolute",
-            bottom: "0",
-            width: "100%",
-        }}>
-            <h style={{textAlign:"left", padding:"10px"}}>
-                Huỳnh Bảo Hân - 106210046 - 21KTMT</h><br></br>
-                <h style={{textAlign:"left", padding:"10px"}}>   
-                Đoàn Đình Cao - 106210229 - 21KTMT2
-            </h>
-            <p style={{
-                margin: "0",
-                fontSize: "14px",
-                fontFamily: "Arial, sans-serif",
-                textAlign: "center",
+                backgroundColor: "#213555",
+                color: "#F5EFE7",
+                padding: "10px 0",
+                position: "absolute",
+                bottom: "0",
+                width: "100%",
             }}>
-                &copy; {new Date().getFullYear()} Da Nang University of Science and Technology.
-            </p>
-        </footer>
+                <h2 style={{ textAlign: "left", padding: "10px" }}>
+                    Huỳnh Bảo Hân - 106210046 - 21KTMT</h2><br></br>
+                <h2 style={{ textAlign: "left", padding: "10px" }}>
+                    Đoàn Đình Cao - 106210229 - 21KTMT2
+                </h2>
+                <p style={{
+                    margin: "0",
+                    fontSize: "14px",
+                    fontFamily: "Arial, sans-serif",
+                    textAlign: "center",
+                }}>
+                    &copy; {new Date().getFullYear()} Da Nang University of Science and Technology.
+                </p>
+            </footer>
         </div>
     );
 }

@@ -1,12 +1,8 @@
 ---
 import DashboardCmp from "../components/Dashboard.jsx";
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<html>
-    <head>
-        <title>Dashboard</title>
-    </head>
-    <body>
-        <DashboardCmp client:only="react" />
-    </body>
-</html>
+<MainLayout title="Dashboard">
+    <DashboardCmp client:only="react" />
+</MainLayout>

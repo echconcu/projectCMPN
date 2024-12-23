@@ -26,77 +26,36 @@ export default function Login() {
 
     return (
         <>
-            <header style={{ backgroundColor: "#213555", padding: "0.1px",height:"130px", textAlign: "center" , top:"0"}}>
-                <h1 style={{ color: "#F5EFE7", fontSize:"50px" }}>Registration</h1>
-            </header>
-            <div style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "700px",
-            }}>
-                <div style={{
-                    backgroundColor:"#213555",
-                    border: "1px solid #213555",
-                    padding: "20px",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    width: "400px",
-                }}>
-                    <h2 style={{ textAlign: "center", color:"#F5EFE7" }}>Login</h2>
-                    
-                    <label style={{
-                        display: "block",
-                        fontWeight: "bold",
-                        marginBottom: "10px",
-                        color: "#F5EFE7",
-                        fontSize: "1.3rem",
-                        paddingLeft:"20px"
-                    }}>
+            <div className="h-full flex items-center justify-center ">
+                <div className="border border-[#213555] p-5 rounded-lg shadow-md w-[400px]">
+                    <h2 className="text-4xl font-medium text-center">21N44-21</h2>
+
+                    <label className="block font-bold mb-2 text-lg">
                         Username:
-                        </label>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
-                            style={{ height:"27px",marginBottom: "10px", width: "90%", paddingLeft: "10px" , fontSize:"20px" }}
+                            className="w-full p-2 border rounded"
                         />
+                    </label>
 
-                    <label style={{
-                        display: "block",
-                        fontWeight: "bold",
-                        marginBottom: "10px",
-                        color: "#F5EFE7",
-                        fontSize: "1.3rem",
-                        paddingLeft:"20px",
-                    }}>
-                        Password: 
-                        </label>
+                    <label className="block font-bold mb-2 text-lg">
+                        Password:
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            style={{ height:"27px",marginBottom: "10px", width: "90%", paddingLeft: "10px" , fontSize:"30px"}}
+                            className="w-full p-2 border rounded"
                         />
-                    
+                    </label>
+
                     <br />
                     <button
                         onClick={() => handleLogin()}
-                        style={{
-                            display: "block",
-                            width: "30%",
-                            padding: "10px",
-                            backgroundColor: "#D8C4B6",
-                            color: "#3E5879",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize:"20px",
-                            height:"40px",
-                        
-                        }}
+                        className="w-full p-3 border hover:bg-slate-300 transition-all duration-150 rounded"
                     >
                         <b>Login</b>
                     </button>

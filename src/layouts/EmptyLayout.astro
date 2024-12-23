@@ -11,18 +11,6 @@ const { title } = Astro.props;
     <head>
         <meta charset="UTF-8" />
         <title>{title} | Project Management</title>
-        <style>
-            nav {
-                background-color: #333;
-                color: white;
-                padding: 1rem;
-            }
-            nav a {
-                color: white;
-                text-decoration: none;
-                margin-right: 1rem;
-            }
-        </style>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -31,13 +19,6 @@ const { title } = Astro.props;
         />
     </head>
     <body class="h-full">
-        <nav>
-            <a href="/dashboard">Home</a>
-            <a href="/projects">Projects</a>
-            <a href="/users">Users</a>
-            <a href="/logout">Logout</a>
-        </nav>
-
         <main class="h-full">
             <slot />
         </main>

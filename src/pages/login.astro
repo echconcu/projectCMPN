@@ -1,12 +1,8 @@
 ---
 import LoginCmp from "../components/LoginComp.jsx";
+import EmptyLayout from "../layouts/EmptyLayout.astro";
 ---
 
-<html>
-  <head>
-    <title>Login</title>
-  </head>
-  <body>
-    <LoginCmp client:only="react" />
-  </body>
-</html>
+<EmptyLayout title="Login">
+  <LoginCmp client:only="react" />
+</EmptyLayout>
