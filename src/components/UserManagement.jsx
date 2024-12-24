@@ -3,6 +3,16 @@ import React, { useEffect, useState } from "react";
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [username, setUsername] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    } else {
+      window.location.href = "/login";
+    }
+  }, []);
 
   useEffect(() => {
     fetch("http://localhost:3000/users")
@@ -32,13 +42,13 @@ export default function UserManagement() {
       <section>
         <h2 style={{ backgroundColor: "#213555", color: "#F5EFE7", padding: "10px", borderRadius: "5px" }}>Users</h2>
         <ul style={{ listStyleType: "none", padding: "0", marginTop: "15px" }}>
-          {users.map((user) => (
-            <li key={user.id} style={{ backgroundColor: "#f0f0f0", margin: "10px 0", padding: "10px", borderRadius: "5px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {users.map((currUser) => (
+            <li key={currUser.id} style={{ backgroundColor: "#f0f0f0", margin: "10px 0", padding: "10px", borderRadius: "5px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <strong>{user.username}</strong> <span style={{ color: "#666" }}>({user.role})</span>
+                <strong>{currUser.username}</strong> <span style={{ color: "#666" }}>({user.role})</span>
               </div>
-              <button
-                onClick={() => deleteUser(user.id)}
+              {user?.role === "admin" && <button
+                onClick={() => deleteUser(currUser.id)}
                 style={{
                   padding: "5px 10px",
                   backgroundColor: "#FF5C58",
@@ -49,13 +59,13 @@ export default function UserManagement() {
                 }}
               >
                 Delete
-              </button>
+              </button>}
             </li>
           ))}
         </ul>
       </section>
 
-      <section style={{ marginTop: "30px" }}>
+      {user?.role === "admin" && <section style={{ marginTop: "30px" }}>
         <h2 style={{ marginBottom: "15px", color: "#213555" }}>Add User</h2>
         <div style={{ marginBottom: "10px" }}>
           <input
@@ -87,8 +97,8 @@ export default function UserManagement() {
         >
           Add User
         </button>
-      </section>
-      
+      </section>}
+
     </div>
   );
 }

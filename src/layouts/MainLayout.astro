@@ -1,4 +1,6 @@
 ---
+import Header from '../components/Header';
+
 interface Props {
     title: string;
 }
@@ -7,22 +9,10 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="h-full">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <title>{title} | Project Management</title>
-        <style>
-            nav {
-                background-color: #333;
-                color: white;
-                padding: 1rem;
-            }
-            nav a {
-                color: white;
-                text-decoration: none;
-                margin-right: 1rem;
-            }
-        </style>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -30,16 +20,20 @@ const { title } = Astro.props;
             rel="stylesheet"
         />
     </head>
-    <body class="h-full">
-        <nav>
-            <a href="/dashboard">Home</a>
-            <a href="/projects">Projects</a>
-            <a href="/users">Users</a>
-            <a href="/logout">Logout</a>
-        </nav>
+    <body class="min-h-screen flex flex-col">
+        <Header client:only="react" />
 
-        <main class="h-full">
+        <main class="flex-1">
             <slot />
         </main>
+        <footer class="bg-[#213555] text-[#F5EFE7] p-4 w-full">
+            <h2 class="text-left px-4">Huỳnh Bảo Hân - 106210046 - 21KTMT</h2>
+            <br />
+            <h2 class="text-left px-4">Đoàn Đình Cao - 106210229 - 21KTMT2</h2>
+            <p class="m-0 text-base text-center">
+                &copy; {new Date().getFullYear()} Da Nang University of Science and
+                Technology.
+            </p>
+        </footer>
     </body>
 </html>

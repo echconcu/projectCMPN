@@ -1,7 +1,7 @@
 import React from "react";
 import Dialog from "./Dialog";
 
-const ProjectDialog = () => {
+const ProjectDialog = ({ projects, setProjects }) => {
     const [open, setOpen] = React.useState(false);
     const [name, setName] = React.useState("");
 

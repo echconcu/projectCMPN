@@ -25,21 +25,27 @@
       "name": "CNPM",
       "completed": false,
       "assignedUsers": [
-        "1734465099311",
-        "1734476293070"
+        "1734476293070",
+        "1734476302980"
       ],
       "tasks": [
         {
-          "id": 1734975649683,
-          "name": "Writing report",
-          "assignee": "1734465099311",
-          "completed": false
+          "id": 1735060517155,
+          "name": "Writing reports",
+          "assignee": "1734476293070",
+          "completed": true
         },
         {
-          "id": 1734975655602,
+          "id": 1735060550133,
           "name": "Coding",
-          "assignee": "1734465099311",
-          "completed": false
+          "assignee": "1734476293070",
+          "completed": true
+        },
+        {
+          "id": 1735061701718,
+          "name": "Không làm gì",
+          "assignee": "1734476302980",
+          "completed": true
         }
       ]
     }

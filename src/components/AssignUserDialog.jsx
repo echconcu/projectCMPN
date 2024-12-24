@@ -38,8 +38,8 @@ const AssignUserDialog = ({ projects, users, setProjects }) => {
                         className="border p-2"
                     >
                         <option value="">Select Project</option>
-                        {projects.map((project) => (
-                            <option key={project.id} value={project.id}>
+                        {projects.map((project, index) => (
+                            <option key={`${project.id}-${index}`} value={project.id}>
                                 {project.name}
                             </option>
                         ))}

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ProjectDialog from "./ProjectDialog";
 import AssignUserDialog from "./AssignUserDialog";
+import AddTaskSection from "./AddTaskSection";
 
 // Component Header
 function Header() {
@@ -16,8 +17,17 @@ export default function ProjectManagement() {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
     const [taskName, setTaskName] = useState("");
-    const [assignedTaskUser, setAssignedTaskUser] = useState("");
     const [accordionOpen, setAccordionOpen] = useState({});
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+            setUser(JSON.parse(savedUser));
+        } else {
+            window.location.href = "/login";
+        }
+    }, []);
 
     // Fetch projects and users
     useEffect(() => {
@@ -56,28 +66,6 @@ export default function ProjectManagement() {
             );
         });
     }
-
-    // Add task to project
-    function addTask(projectId) {
-        const project = projects.find((p) => p.id === projectId);
-        const newTask = { id: Date.now(), name: taskName, assignee: assignedTaskUser, completed: false };
-        const updatedTasks = [...project.tasks, newTask];
-
-        fetch(`http://localhost:3000/projects/${projectId}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tasks: updatedTasks }),
-        }).then(() => {
-            setProjects((prev) =>
-                prev.map((p) =>
-                    p.id === projectId ? { ...p, tasks: updatedTasks } : p
-                )
-            );
-            setTaskName("");
-            setAssignedTaskUser("");
-        });
-    }
-
     // Toggle task completion
     function toggleTaskCompletion(projectId, taskId) {
         const project = projects.find((p) => p.id === projectId);
@@ -139,13 +127,24 @@ export default function ProjectManagement() {
         });
     }
 
+    const tasksNum = useMemo(() => {
+        return projects.reduce((acc, project) => acc + project.tasks.length, 0);
+    }, [projects]);
+
+    const completedTasksNum = useCallback((userId) => {
+        return projects.reduce((acc, project) => {
+            const userTasks = project.tasks.filter((task) => task.assignee === userId);
+            return acc + userTasks.filter((task) => task.completed).length;
+        }, 0);
+    })
+
     return (
-        <div style={{ fontFamily: 'Arial, sans-serif' }}>
+        <div>
             <Header />
 
-            <main style={{ padding: '20px' }}>
+            <div className="p-5">
                 <section>
-                    <h2 style={{ backgroundColor: "#213555", color: "#F5EFE7", height: "32px", justifyContent: "center", padding: "10px" }}>Projects</h2>
+                    <p style={{ backgroundColor: "#213555", color: "#F5EFE7", height: "32px", justifyContent: "center", padding: "10px" }}>Projects</p>
                     <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                         {projects.map((project) => (
                             <li key={project.id} style={{ marginBottom: '20px' }}>
@@ -157,16 +156,16 @@ export default function ProjectManagement() {
                                     <strong>Assigned Users:</strong>
                                     <ul>
                                         {project.assignedUsers.map((userId) => {
-                                            const user = users.find((u) => u.id === userId);
-                                            return user ? (
-                                                <li key={user.id}>
-                                                    {user.username}{" "}
-                                                    <button
+                                            const currentUser = users.find((u) => u.id === userId);
+                                            return currentUser ? (
+                                                <li key={currentUser.id}>
+                                                    {`${currentUser.username} - ${((project.tasks.filter((task) => task.assignee === userId)?.length/tasksNum)*100).toFixed(2)}%`}{" "}
+                                                    {user.role === "admin" && <button
                                                         onClick={() => removeUserFromProject(project.id, user.id)}
                                                         style={{ marginLeft: '10px' }}
                                                     >
                                                         Remove
-                                                    </button>
+                                                    </button>}
                                                 </li>
                                             ) : null;
                                         })}
@@ -176,7 +175,7 @@ export default function ProjectManagement() {
                                     </button>
                                     {accordionOpen[project.id] && (
                                         <div style={{ marginLeft: "20px", marginTop: '10px' }}>
-                                            <h4>Tasks:</h4>
+                                            <p>Tasks:</p>
                                             <ul>
                                                 {project.tasks.map((task) => (
                                                     <li key={task.id} style={{ marginBottom: '10px' }}>
@@ -198,77 +197,34 @@ export default function ProjectManagement() {
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <div className="flex gap-x-3">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Task Name"
-                                                    value={taskName}
-                                                    onChange={(e) => setTaskName(e.target.value)}
-                                                    className="p-2 border rounded"
-                                                />
-                                                <select
-                                                    onChange={(e) => setAssignedTaskUser(e.target.value)}
-                                                    value={assignedTaskUser}
-                                                    className="p-2 border rounded"
-                                                >
-                                                    <option value="">Assign User</option>
-                                                    {users.reduce((acc, user) => {
-                                                        if (project.assignedUsers.includes(user.id)) {
-                                                            acc.push(<option key={user.id} value={user.id}>{user.username}</option>);
-                                                        }
-                                                        return acc;
-                                                    }, [])}
-                                                </select>
-                                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => addTask(project.id)}>
-                                                    Add Task
-                                                </button>
-                                            </div>
+                                            <AddTaskSection project={project} users={users} key={`${project.id}-add-task`} />
                                         </div>
                                     )}
-                                    <button
-                                        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
-                                        onClick={() => markProjectAsCompleted(project.id)}
-                                    >
-                                        Mark as {project.completed ? "Incomplete" : "Complete"}
-                                    </button>
-                                    <button
-                                        className="mt-4 bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
-                                        onClick={() => deleteProject(project.id)}
-                                    >
-                                        Delete Project
-                                    </button>
+                                    {user?.role === "admin" && <>
+                                        <button
+                                            className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+                                            onClick={() => markProjectAsCompleted(project.id)}
+                                        >
+                                            Mark as {project.completed ? "Incomplete" : "Complete"}
+                                        </button>
+                                        <button
+                                            className="mt-4 bg-red-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
+                                            onClick={() => deleteProject(project.id)}
+                                        >
+                                            Delete Project
+                                        </button></>}
                                 </div>
                             </li>
                         ))}
                     </ul>
                 </section>
 
-                <ProjectDialog />
-
-                <AssignUserDialog projects={projects} users={users} setProjects={setProjects} />
-            </main>
-            <footer style={{
-                backgroundColor: "#213555",
-                color: "#F5EFE7",
-                padding: "10px 0",
-                position: "absolute",
-                bottom: "0",
-                width: "100%",
-            }}>
-                <h2 style={{ textAlign: "left", padding: "10px" }}>
-                    Huỳnh Bảo Hân - 106210046 - 21KTMT</h2><br></br>
-                <h2 style={{ textAlign: "left", padding: "10px" }}>
-                    Đoàn Đình Cao - 106210229 - 21KTMT2
-                </h2>
-                <p style={{
-                    margin: "0",
-                    fontSize: "14px",
-                    fontFamily: "Arial, sans-serif",
-                    textAlign: "center",
-                }}>
-                    &copy; {new Date().getFullYear()} Da Nang University of Science and Technology.
-                </p>
-            </footer>
+                {user?.role === "admin" && (<div className="flex gap-x-2">
+                    <ProjectDialog projects={projects} setProjects={setProjects} />
+                    <AssignUserDialog projects={projects} users={users} setProjects={setProjects} />
+                </div>
+                )}
+            </div>
         </div>
     );
 }
