@@ -197,7 +197,7 @@ export default function ProjectManagement() {
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <AddTaskSection project={project} users={users} key={`${project.id}-add-task`} />
+                                            <AddTaskSection project={project} projects={projects} setProjects={setProjects} users={users} key={`${project.id}-add-task`} />
                                         </div>
                                     )}
                                     {user?.role === "admin" && <>

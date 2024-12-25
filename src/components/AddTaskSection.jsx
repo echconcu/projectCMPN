@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function AddTaskSection({ project, users }) {
+export default function AddTaskSection({ project, users, projects, setProjects }) {
     const [taskName, setTaskName] = useState("");
     const [assignedTaskUser, setAssignedTaskUser] = useState("");
 
