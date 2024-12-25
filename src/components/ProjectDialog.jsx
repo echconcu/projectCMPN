@@ -1,7 +1,7 @@
 import React from "react";
 import Dialog from "./Dialog";
 
-const ProjectDialog = ({ projects, setProjects }) => {
+const ProjectDialog = ({ projects, setProjects, fetchProjects }) => {
     const [open, setOpen] = React.useState(false);
     const [name, setName] = React.useState("");
 
@@ -13,7 +13,7 @@ const ProjectDialog = ({ projects, setProjects }) => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newProject),
         }).then(() => {
-            setProjects((prev) => [...prev, newProject]); // Add project to local state
+            fetchProjects();
         });
     }
 

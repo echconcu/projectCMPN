@@ -6,8 +6,6 @@ export default function Login() {
     const [error, setError] = useState("");
 
     function handleLogin() {
-        console.log('this shit ran');
-
         fetch("http://localhost:3000/users")
             .then((res) => res.json())
             .then((users) => {

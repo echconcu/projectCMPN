@@ -16,9 +16,14 @@ function Header() {
 export default function ProjectManagement() {
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
-    const [taskName, setTaskName] = useState("");
     const [accordionOpen, setAccordionOpen] = useState({});
     const [user, setUser] = useState(null);
+    
+    const fetchProjects = useCallback(() => {
+        fetch("http://localhost:3000/projects")
+            .then((res) => res.json())
+            .then(setProjects);
+    }, []);
 
     useEffect(() => {
         const savedUser = localStorage.getItem("user");
@@ -31,9 +36,7 @@ export default function ProjectManagement() {
 
     // Fetch projects and users
     useEffect(() => {
-        fetch("http://localhost:3000/projects")
-            .then((res) => res.json())
-            .then(setProjects);
+        fetchProjects();
 
         fetch("http://localhost:3000/users")
             .then((res) => res.json())
@@ -130,14 +133,6 @@ export default function ProjectManagement() {
     const tasksNum = useMemo(() => {
         return projects.reduce((acc, project) => acc + project.tasks.length, 0);
     }, [projects]);
-
-    const completedTasksNum = useCallback((userId) => {
-        return projects.reduce((acc, project) => {
-            const userTasks = project.tasks.filter((task) => task.assignee === userId);
-            return acc + userTasks.filter((task) => task.completed).length;
-        }, 0);
-    })
-
     return (
         <div>
             <Header />
@@ -220,7 +215,7 @@ export default function ProjectManagement() {
                 </section>
 
                 {user?.role === "admin" && (<div className="flex gap-x-2">
-                    <ProjectDialog projects={projects} setProjects={setProjects} />
+                    <ProjectDialog projects={projects} setProjects={setProjects} fetchProjects={fetchProjects} />
                     <AssignUserDialog projects={projects} users={users} setProjects={setProjects} />
                 </div>
                 )}
